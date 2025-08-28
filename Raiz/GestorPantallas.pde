@@ -26,21 +26,6 @@ class GestorPantallas {
   textAlign(CENTER, CENTER); // Alinear texto al centro
   text("SPACE SHOOTER", width / 2, 100); // Título principal en la parte superior
   
-        // ====== CONTROLES DE VOLUMEN ======
-    fill(255); // Color blanco para los botones y texto
-    
-    // Texto de porcentaje de volumen
-    textAlign(LEFT, CENTER);
-    text("Volumen: " + int(volumen * 100) + "%", width - 450, 70);
-    
-    // Botón volumen - (disminuir) → más abajo y más separado
-    rect(width - 380, 100, 50, 50, 8);
-    
-    // Botón volumen + (aumentar) → más abajo y más separado
-    rect(width - 290, 100, 50, 50, 8);
-    
-    // Botón mute/unmute → lo dejamos alineado a la nueva altura
-    rect(width - 180, 100, 120, 50, 8);
   
   // ====== MEJORES PUNTUACIONES ======
   fill(200); // Color gris claro para el título
@@ -100,6 +85,7 @@ class GestorPantallas {
     textSize(30);
     text("Score: " + prota.getScore(), width / 2, height / 2 + 60);
     text("Presiona 'R' para reiniciar", width / 2, height / 2 + 100);
+    text("Presiona 'E' para Volver al menu", width / 2, height / 2 + 150);
   }
 
   void mostrarHUD() {

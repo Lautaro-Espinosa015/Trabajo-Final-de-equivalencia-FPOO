@@ -21,7 +21,7 @@ class LuckyBonus extends Lucky {
         }
         else if (bonus == 2){
             prota.aumentarPuntaje(1000);
-            mostrarMensaje("¡Eres Increible tu puntuacion es de ", 3.0f, color(0, 255, 0));
+            mostrarMensaje("¡Eres Increible tu puntuacion es de " + prota.getScore() + " ", 3.0f, color(0, 255, 0));
         }
     }
 

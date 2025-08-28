@@ -5,10 +5,10 @@ class MensajeFlotante {
     private int colorTexto;
   
     public MensajeFlotante(PFont fuente) {
-        this.fuente = fuente; // Usar la fuente pasada como parámetro
+        this.fuente = fuente; 
         this.texto = "";
         this.tiempoRestante = 0;
-        this.colorTexto = color(255, 255, 255); // Blanco por defecto
+        this.colorTexto = color(250, 250, 250); 
     }
   
     public void mostrar(String mensaje, float duracion, int colores) {
@@ -30,7 +30,7 @@ class MensajeFlotante {
             fill(colorTexto);
             textFont(fuente);
             textAlign(CENTER, CENTER);
-            text(texto, width / 2, height / 2); // Siempre en centro de pantalla
+            text(texto, width / 2, 50); // Siempre en centro de pantalla
             popMatrix();
         }
     }

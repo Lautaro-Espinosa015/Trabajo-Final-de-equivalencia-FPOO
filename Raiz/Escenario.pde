@@ -392,3 +392,138 @@ for (Proyectil pJugador : prota.getProyectiles()) {
         }
     }
 }*/
+
+
+
+
+
+
+
+
+
+
+
+// antigua musica
+
+/*
+
+class GestorAudio {
+  Minim minim;
+  AudioPlayer musicaMenu;
+  AudioPlayer musicaJugando;
+  AudioPlayer musicaNivel2;
+  float volumen = 0.7;
+  boolean muteado = false;
+  int estadoActual = -1; // Para controlar cambios
+  GestorAudio(PApplet app) {
+    minim = new Minim(app);
+    musicaMenu = minim.loadFile("menu.wav");
+    musicaJugando = minim.loadFile("nivel1.mp3");
+    musicaNivel2 = minim.loadFile("nivel2.wav");
+    musicavictoria = minim.loadFile("victoria.mp3");
+    musicaderrota = minim.loadFile("derrota.mp3");
+    setVolumen(volumen);
+  }
+  
+  void actualizar(int nuevoEstado) {
+    if (estadoActual == nuevoEstado) return;
+    
+    // Detener música anterior
+    switch(estadoActual) {
+      case ESTADO_MENU: musicaMenu.pause(); break;
+      case ESTADO_JUGANDO: musicaJugando.pause(); break;
+      case ESTADO_NIVEL2: musicaNivel2.pause(); break;
+      case ESTADO_NIVEL2MENU: musicavictoria.pause();break;
+      case ESTADO_GAMEOVER: musicaderrota.pause();break;
+      case ESTADO_HORDA: musicaJugando.pause(); break;
+    }
+    
+    // Iniciar nueva música
+    if (!muteado) {
+      switch(nuevoEstado) {
+        case ESTADO_MENU:
+          musicaMenu.rewind();
+          musicaMenu.loop();
+          break;
+        case ESTADO_JUGANDO:
+          musicaJugando.rewind();
+          musicaJugando.loop();
+          break;
+   case ESTADO_NIVEL2:
+          musicaNivel2.rewind();
+          musicaNivel2.loop();
+          break;
+   case ESTADO_HORDA:
+        musicaJugando.rewind();
+        musicaJugando.loop();
+        break;
+   case ESTADO_CREDITOS:
+        musicavictoria.rewind();
+        musicavictoria.loop();
+        break;
+   case ESTADO_GAMEOVER:
+        musicaderrota.rewind();
+        musicaderrota.loop();
+        break;
+   case ESTADO_NIVEL2MENU:
+        musicavictoria.rewind();
+        musicavictoria.loop();
+        break;
+        default: // Para gameover y otros estados sin música
+          break;
+      }
+    }
+    
+    estadoActual = nuevoEstado;
+  }
+  void setVolumen(float vol) {
+    volumen = constrain(vol, 0, 1);
+    float dB = map(volumen, 0, 1, -40, 0); // Rango más apropiado
+    musicaMenu.setGain(dB);
+    musicaJugando.setGain(dB);
+    musicaNivel2.setGain(dB);
+  }
+  
+  void toggleMute(boolean muteado) {
+    
+    if (muteado == true) {
+      musicaMenu.mute();
+      musicaJugando.mute();
+      musicaNivel2.mute();
+      musicaderrota.mute();
+      musicavictoria.mute();
+    } else {
+      musicaMenu.unmute();
+      musicaJugando.unmute();
+      musicaNivel2.unmute();
+      musicaderrota.unmute();
+      musicavictoria.unmute();
+      actualizar(estadoActual); // Reanudar música si es necesario
+    }
+  }
+  void detener() {
+    musicaMenu.close();
+    musicaJugando.close();
+    musicaNivel2.close();
+    musicaderrota.close();
+    minim.stop();
+  }
+  
+  void detenerMusicaActual() {
+    switch (estadoActual) {
+        case ESTADO_MENU: musicaMenu.pause(); break;
+        case ESTADO_JUGANDO: musicaJugando.pause(); break;
+        case ESTADO_NIVEL2: musicaNivel2.pause(); break;
+        case ESTADO_HORDA: musicaJugando.pause(); break;
+        case ESTADO_CREDITOS: musicavictoria.pause(); break;
+        case ESTADO_GAMEOVER: musicaderrota.pause(); break;
+        case ESTADO_NIVEL2MENU: musicavictoria.pause(); break;
+    }
+}
+
+  
+}
+
+
+
+*/

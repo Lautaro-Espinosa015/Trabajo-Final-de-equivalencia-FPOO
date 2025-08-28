@@ -22,9 +22,9 @@ class LuckyPenalty extends Lucky {
           mostrarMensaje("Hemos reducido tu puntaje para alargar el juego artificialmente ", 3.0f, color(0, 255, 0));
         }
         if (debuff == 2){
-            int cantidadEnemigos = (int) random(1, 6); // Generar una cantidad aleatoria de enemigos (1 a 5)
+            int cantidadEnemigos = (int) random(1, 12); // Generar una cantidad aleatoria de enemigos (1 a 12)
             agregarEnemigos(cantidadEnemigos); 
-            mostrarMensaje("Duplicaquemos los enemigos, estaba muy facil!!", 3.0f, color(0, 255, 0));
+            mostrarMensaje("aumente la cantidad enemigos, estaba muy facil!!", 3.0f, color(0, 255, 0));
         }
     }
     @Override

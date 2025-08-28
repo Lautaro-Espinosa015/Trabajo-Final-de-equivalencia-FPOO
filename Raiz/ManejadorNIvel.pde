@@ -19,8 +19,7 @@ class ManejadorNivel {
         // Protagonista
         prota.update(deltaTime);
         prota.display(protagonista);
-        println("Joypad up: " + joypad.isUpPressed());
-        println("Prota pos después de mover: " + prota.getPosicion());
+        
 
         // Enemigos
         for (int i = enemigos.size() - 1; i >= 0; i--) {

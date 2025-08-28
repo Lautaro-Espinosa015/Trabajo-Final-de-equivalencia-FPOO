@@ -140,7 +140,7 @@ private float tiempoSinDisparo= 0 ;
    
    public void ganarVidas(){
      if (vidas < 1200){
-     vidas+=15;
+     vidas+=5;
      }      
    }
    
