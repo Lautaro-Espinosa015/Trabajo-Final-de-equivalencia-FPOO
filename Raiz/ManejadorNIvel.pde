@@ -78,7 +78,7 @@ class ManejadorNivel {
         mensajeFlotante.dibujar();
         mensajeFlotante.actualizar(deltaTime);
 
-        // Controles
+       // Controles
         if (joypad.isUpPressed()) prota.mover(0, deltaTime);
         if (joypad.isRightPressed()) prota.mover(1, deltaTime);
         if (joypad.isDownPressed()) prota.mover(2, deltaTime);
@@ -87,6 +87,9 @@ class ManejadorNivel {
         // HUD
         gestorPantallas.mostrarHUD();
 
-        
+        // Condición especial de cada nivel
+        if (condicionEspecial != null) {
+            condicionEspecial.run();
+        }
     }
 }
