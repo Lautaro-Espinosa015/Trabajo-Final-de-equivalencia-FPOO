@@ -136,7 +136,13 @@ private float tiempoSinDisparo= 0 ;
         vidas--;
     }
     
-   } 
+   }
+   
+   public void ganarVidas(){
+     if (vidas < 1200){
+     vidas+=15;
+     }      
+   }
    
    public void aumentarVelocidad(float incremento){
      this.velocidad.add(new PVector (incremento,incremento));
