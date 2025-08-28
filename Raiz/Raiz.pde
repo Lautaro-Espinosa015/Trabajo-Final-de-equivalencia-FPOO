@@ -1,15 +1,22 @@
 import ddf.minim.*;
 // Atributos
-private Protagonista prota;
-private JoyPad joypad;
-private ArrayList<Lucky> luckyblock;
-private ArrayList<Enemigo> enemigos;
+private Protagonista prota; /** Atributo de la clase del protagonista*/
+private JoyPad joypad; /** Atributo de l clase para movimiento */
+//
+private ArrayList<Lucky> luckyblock; /** Atributo para generar los luckyblocks*/
+private ArrayList<Enemigo> enemigos; /** Atributo de la clase del enemigo (generico)*/
 private ArrayList<Proyectil> proyectilesEnemigos = new ArrayList<Proyectil>(); 
+//
+private ArrayList<Lucky> luckyblockNivel2;
+private ArrayList<Enemigo> enemigosNivel2;
+private ArrayList<Proyectil> proyectilesEnemigosNivel2 = new ArrayList<Proyectil>(); 
+//
+private boolean muteado = false;
 private float lastFrameTime; 
 private PFont fontTitulo;
 private PFont fontTexto;
 private ArrayList<Integer> mejoresPuntuaciones = new ArrayList<Integer>();
-private MensajeFlotante mensajeFlotante; // Declarar sin inicializar
+private MensajeFlotante mensajeFlotante; 
 private PImage fondo1;
 private PImage fondo2;
 private PImage lucky;
@@ -17,32 +24,40 @@ private PImage enemigo1;
 private PImage enemigo2;
 private PImage enemigo3;
 private PImage protagonista;
+
+/** Estados del videojuego*/
 final int ESTADO_MENU = 0;
 final int ESTADO_JUGANDO = 1;
 final int ESTADO_GAMEOVER = 2;
+final int ESTADO_NIVEL2MENU = 7;
 private int estadoActual = ESTADO_MENU;
 final int ESTADO_PAUSA = 3;
 final int ESTADO_NIVEL2 = 4;
 final int ESTADO_CREDITOS = 5;
 final int ESTADO_HORDA= 6;
+
 private boolean HORDA= false;
 private int nivel = 1;
 private GestorAudio audio;
 private ManejadorNivel nivel1;
 private ManejadorNivel nivel2;
 private GestorPantallas gestorPantallas;
- 
+
 // minim
 Minim minim;
 AudioPlayer player;
 AudioPlayer musicaMenu;
 AudioPlayer musicaJuego;
 AudioPlayer musicaNivel2;
+AudioPlayer musicavictoria;
+AudioPlayer musicaderrota;
 boolean musicaActiva = true;
 float volumen = 0.5; // Volumen inicial (0-1)
 
+/** */
+
 void setup() {
-    size(1600, 800);
+    size(1600, 800); /** Lienzo de la pantalla*/
     fontTitulo = createFont("Arial Bold", 48);
     fontTexto = createFont("Arial", 32);
     mensajeFlotante = new MensajeFlotante(fontTexto); 
@@ -63,10 +78,7 @@ void setup() {
     minim = new Minim(this);
     audio = new GestorAudio(this);
      // Cargar músicas
-    musicaMenu = minim.loadFile("menu.wav");
-    musicaJuego = minim.loadFile("nivel1.mp3");
-    musicaNivel2 = minim.loadFile("nivel2.wav");
-    setVolumen(volumen);
+    //setVolumen(volumen);
     
     
     
@@ -74,16 +86,16 @@ void setup() {
     prota = new Protagonista();
     prota.setPosicion(new PVector(width / 2, height / 2));
     prota.setVelocidad(new PVector(5, 5)); // Establecer la velocidad base
-    joypad = new JoyPad();
-    luckyblock = new ArrayList<Lucky>();
+    joypad = new JoyPad(); /** Clase joypad para movimiento del protagonista */
+    luckyblock = new ArrayList<Lucky>(); /** Se crea un arraylist para la generacion de multiples cofres de la suerte */
     
     
-    // Inicializar lucky blocks
+    /** Generacion de Luckyblocks de manera aleatoria en una cantidad de 15 esparcidos por el mapa*/
     for (int j = 0; j < 15; j++) {
         PVector posicionL = new PVector(random(0, 2400), random(0, 1600));
         int tipo = (int) random(2);
         float duracion = random(0,15);
-        if (tipo == 0){
+        if (tipo == 0){ /** Tipo de suerte*/
             luckyblock.add(new LuckyBonus(posicionL,(int) random(0,200),duracion));
         }
         else if (tipo == 1){
@@ -92,8 +104,8 @@ void setup() {
         luckyblock.add(new Lucky(posicionL, lucky));
     }
     
-    // Inicializar enemigos
-    enemigos = new ArrayList<Enemigo>();
+    /** Se inicializa una Lista de 8 enemigos cuya posicion será aleatoria en un espacio de 2400x1600 */
+    enemigos = new ArrayList<Enemigo>(); /** Se crea un arraylist para la generacion de multiples enemigos de la suerte */
     for (int i = 0; i < 8; i++) { 
         PVector posicion = new PVector(random(0, 2400), random(0, 1600));
         enemigos.add(new EnemigoFuerte(posicion,enemigo2));
@@ -102,54 +114,86 @@ void setup() {
         posicion = new PVector(random(0, 2400), random(0, 1600)); 
         enemigos.add(new EnemigoRapido(posicion,enemigo3));
     }
+     enemigosNivel2 = new ArrayList<Enemigo>();
+     for (int i = 0; i < 8; i++) { 
+        PVector posicionNivel2 = new PVector(random(0, 2400), random(0, 1600));
+        enemigosNivel2.add(new EnemigoFuerte(posicionNivel2,enemigo2));
+        posicionNivel2 = new PVector(random(0, 2400), random(0, 1600));
+        enemigosNivel2.add(new EnemigoLento(posicionNivel2,enemigo1)); //corregir
+        posicionNivel2 = new PVector(random(0, 2400), random(0, 1600)); 
+        enemigosNivel2.add(new EnemigoRapido(posicionNivel2,enemigo3));
+    }
+    luckyblockNivel2 = new ArrayList<Lucky>();
+    for (int j = 0; j < 15; j++) {
+        PVector posicionL2 = new PVector(random(0, 2400), random(0, 1600));
+        int tipo = (int) random(2);
+        float duracion = random(0,15);
+        if (tipo == 0){
+            luckyblockNivel2.add(new LuckyBonus(posicionL2,(int) random(0,200),duracion));
+        }
+        else if (tipo == 1){
+            luckyblockNivel2.add(new LuckyPenalty(posicionL2,(int) random(0,150),duracion));
+        }
+        luckyblockNivel2.add(new Lucky(posicionL2, lucky));
+    }
+    proyectilesEnemigosNivel2 = new ArrayList<Proyectil>();
+    
+    
      nivel1 = new ManejadorNivel(fondo1, enemigos, proyectilesEnemigos, luckyblock);
-     nivel2 = new ManejadorNivel(fondo2, enemigos, proyectilesEnemigos, luckyblock);
+     nivel2 = new ManejadorNivel(fondo2, enemigosNivel2, proyectilesEnemigosNivel2, luckyblockNivel2);
      gestorPantallas = new GestorPantallas(fontTitulo, fontTexto, mejoresPuntuaciones, volumen, musicaActiva, prota);
 }
 
 void draw() {
-    float currentTime = millis() / 1000.0; // Tiempo actual en segundos
-    float deltaTime = currentTime - lastFrameTime; // Calcular deltaTime
-    lastFrameTime = currentTime; // Actualizar el tiempo del último cuadro
+    float currentTime = millis() / 1000.0; /** Almacena el tiempo transcurrido desde el ultimo fotograma renderizado por la funcion millis*/
+    float deltaTime = currentTime - lastFrameTime;  /**Calcular deltaTime por medio de la reste entre el lastframetime y el currenttime*/
+    lastFrameTime = currentTime; /** Actualizar el tiempo del último cuadro*/
     prota.getScore();
     audio.actualizar(estadoActual);
-    println("Estado: " + estadoActual + " Prota pos: " + prota.getPosicion());
-
+   
+    /** Maquina de estado que llama a diferentes funciones segun el estado actual*/
     switch(estadoActual){
       case ESTADO_MENU:
-       gestorPantallas.dibujarMenu();
+       gestorPantallas.dibujarMenu(); /** Llama a la funcion de dibujar el menu al abrir la aplicacion para poder interactuar con las opciones del juego */
         break;
       case ESTADO_JUGANDO:
-        actualizarJuego(deltaTime);
-        
+        actualizarJuego(deltaTime); /** Es el estado referido para el primer nivel del videojuego */
         break;
       case ESTADO_GAMEOVER:
-        gestorPantallas.mostrarGameOver();
+        gestorPantallas.mostrarGameOver(); /** Es la pantalla que se mostrara al perder la cantidad de vidas totales del protagonista*/
         break;
       case ESTADO_PAUSA:
-        gestorPantallas.mostrarPausa();
+        gestorPantallas.mostrarPausa(); /** Es el estado de pausa que se puede acceder en cualquier momento mediante la tecla P*/
         break;
-      case ESTADO_NIVEL2:
-        gestorPantallas.mostrarNivel2();
+      case ESTADO_NIVEL2MENU:
+        gestorPantallas.mostrarNivel2(); 
+        break; 
+        case ESTADO_NIVEL2:
         actualizarNivel2(deltaTime);
-        break;  
+        break;
         case ESTADO_HORDA:
-        HORDA = true;
+        actualizarHorda(deltaTime);
+        break;
+        case ESTADO_CREDITOS:
+        gestorPantallas.mostrarGameEnd();
+        break;
         
     }
+    
+        
+    
 }
  
     
-// Nivel 1
+/** Logica especifica del nivel 1 */
 void actualizarJuego(float deltaTime) {
-    nivel1.actualizar(deltaTime, prota, joypad, () -> {
-        if (enemigos.isEmpty()) {
-            estadoActual = ESTADO_MENU;}
-        if (prota.getScore() >= 500 && nivel == 1) {
-            nivel = 2;
-            estadoActual = ESTADO_NIVEL2;
-            prota.setPosicion(new PVector(width / 2, height / 2));
-            reiniciarGeneracionNivel2();
+    nivel1.actualizar(deltaTime, prota, joypad, () -> { /** se envia deltaTime,protagonista,joypad y () se refiere a la funcion que verifica constantemente que el score del */
+        if (prota.getScore() >= 500 && nivel == 1 && HORDA == false) { /** protagonista sea menor a 500 y no se encuentre en estado horda de otra manera el estado se cambiaria a nivel2 MENU*/
+            nivel = 2;                                                  /** y la generacion de enemigos y niveles se reiniciaria*/
+            estadoActual = ESTADO_NIVEL2MENU; 
+            reiniciarGeneracionNivel2();  /** Comentar despues*/
+        } else if (enemigos.isEmpty()) { /** De no haber enemigos en campo se entra en gameover*/
+            estadoActual = ESTADO_GAMEOVER; 
         }
     });
 }
@@ -157,47 +201,61 @@ void actualizarJuego(float deltaTime) {
 
 // Nivel 2
 void actualizarNivel2(float deltaTime) {
-    nivel2.actualizar(deltaTime, prota, joypad, () -> {
-        if (enemigos.isEmpty()) {
-            estadoActual = ESTADO_MENU;
+    nivel2.actualizar(deltaTime, prota, joypad, () -> {   
+        if (prota.getScore() >= 2500) {
+            estadoActual = ESTADO_CREDITOS;
         }
     });
+}
+// nivel horda
+void actualizarHorda(float deltaTime){
+     
+        HORDA = true;
+        nivel1.actualizar(deltaTime, prota, joypad, () -> {});
+     
+    
 }
     
 
 void reiniciarGeneracionNivel2() {
-    // Limpiar listas
-    proyectilesEnemigos.clear();
-    enemigos.clear();
-    luckyblock.clear();
+    // Inicializar listas si son nulas
+    if (enemigosNivel2 == null) enemigosNivel2 = new ArrayList<Enemigo>();
+    if (luckyblockNivel2 == null) luckyblockNivel2 = new ArrayList<Lucky>();
+    if (proyectilesEnemigosNivel2 == null) proyectilesEnemigosNivel2 = new ArrayList<Proyectil>();
+
+    // Limpiar listas de nivel 2
+    enemigosNivel2.clear();
+    luckyblockNivel2.clear();
+    proyectilesEnemigosNivel2.clear();
     
-    // Generar nuevos lucky blocks
-    for (int j = 0; j < 20; j++) { // Aumentar la cantidad de lucky blocks
+    // Generar nuevos lucky blocks para nivel 2
+    for (int j = 0; j < 20; j++) {
         PVector posicionL = new PVector(random(0, 2400), random(0, 1600));
         int tipo = (int) random(2);
         float duracion = random(0, 15);
         if (tipo == 0) {
-            luckyblock.add(new LuckyBonus(posicionL, (int) random(0, 200), duracion));
+            luckyblockNivel2.add(new LuckyBonus(posicionL, (int) random(0, 200), duracion));
         } else if (tipo == 1) {
-            luckyblock.add(new LuckyPenalty(posicionL, (int) random(0, 150),duracion));
+            luckyblockNivel2.add(new LuckyPenalty(posicionL, (int) random(0, 150), duracion));
         }
-        luckyblock.add(new Lucky(posicionL, lucky));
+        luckyblockNivel2.add(new Lucky(posicionL, lucky));
     }
     
-    // Generar nuevos enemigos con estadísticas diferentes
-    for (int i = 0; i < 10; i++) { // Aumentar la cantidad de enemigos
+    // Generar nuevos enemigos para nivel 2 con estadísticas diferentes
+    for (int i = 0; i < 10; i++) {
         PVector posicion = new PVector(random(0, 2400), random(0, 1600));
-        enemigos.add(new EnemigoFuerte(posicion, enemigo2)); // Enemigos más fuertes
+        enemigosNivel2.add(new EnemigoFuerte(posicion, enemigo2));
         posicion = new PVector(random(0, 2400), random(0, 1600));
-        enemigos.add(new EnemigoLento(posicion, enemigo1)); // Enemigos lentos
+        enemigosNivel2.add(new EnemigoLento(posicion, enemigo1));
         posicion = new PVector(random(0, 2400), random(0, 1600));
-        enemigos.add(new EnemigoRapido(posicion, enemigo3)); // Enemigos rápidos
+        enemigosNivel2.add(new EnemigoRapido(posicion, enemigo3));
     }
-    
 }
+
 
 void reiniciarJuego() {
     nivel = 1;
+    HORDA = false;
     proyectilesEnemigos.clear(); // Limpiar proyectiles enemigos
     enemigos.clear(); // Limpiar enemigos
     luckyblock.clear(); // Limpiar lucky blocks
@@ -213,50 +271,31 @@ void agregarEnemigos(int cantidad) {
     }
 }
 
-void mousePressed() {
-  
-    if (estadoActual == ESTADO_MENU) {
-    // Control de volumen en menú
-    if (mouseX > width-200 && mouseX < width-170 && mouseY > 50 && mouseY < 80) {
-      setVolumen(max(0, volumen-0.1)); // Bajar volumen
+void mousePressed() { 
+    // ====== BOTÓN INICIAR JUEGO ======
+    if (mouseX > width / 2 - 150 && mouseX < width / 2 + 150 &&
+        mouseY > 500 && mouseY < 570) {
+      estadoActual = ESTADO_JUGANDO;
     }
-    else if (mouseX > width-150 && mouseX < width-120 && mouseY > 50 && mouseY < 80) {
-      setVolumen(min(1, volumen+0.1)); // Subir volumen
+    
+    // ====== BOTÓN MODO HORDA ======
+    else if (mouseX > width / 2 - 150 && mouseX < width / 2 + 150 &&
+             mouseY > 600 && mouseY < 670) {
+      estadoActual = ESTADO_HORDA; // Cambiar a tu estado especial para horda
     }
-    else if (mouseX > width-100 && mouseX < width-40 && mouseY > 50 && mouseY < 80) {
-      //GestorAudio.toggleMute(); // Alternar mute
+    
+    // ====== BOTÓN SALIR ======
+    else if (mouseX > width / 2 - 150 && mouseX < width / 2 + 150 &&
+             mouseY > 700 && mouseY < 770) {
+      exit();
     }
   }
-    if (estadoActual == ESTADO_MENU) {
-        if (mouseX > width / 2 - 100 && mouseX < width / 2 + 100) {
-            if (mouseY > 450 && mouseY < 510) {
-                estadoActual = ESTADO_JUGANDO;
-            } else if (mouseY > 530 && mouseY < 590) {
-                exit();
-            }
-        }
-    } else if (estadoActual == ESTADO_NIVEL2) {
-        if (mouseX > width / 2 - 100 && mouseX < width / 2 + 100) {
-            if (mouseY > height / 2 + 20 && mouseY < height / 2 + 60) {
-                estadoActual = ESTADO_JUGANDO; // Comenzar el segundo nivel
-                reiniciarGeneracionNivel2(); // Reiniciar la generación de enemigos y lucky blocks
-            }
-        }
-    }
-}
+
 
 
 void mostrarMensaje(String mensaje, float duracion, int colores) {
     mensajeFlotante.mostrar(mensaje, duracion, colores);
 }
-
-
-void setVolumen(float v) {
-  volumen = v;
-  musicaMenu.setGain(map(volumen, 0, 1, -80, 0)); // -80 es silencio, 0 es volumen máximo
-  musicaJuego.setGain(map(volumen, 0, 1, -80, 0));
-  musicaNivel2.setGain(map(volumen, 0, 1, -80, 0));
-}    
     
 void stop() {
   audio.detener();
@@ -264,47 +303,104 @@ void stop() {
 }
 
 public void keyPressed() {
-  if (estadoActual == ESTADO_JUGANDO){
-    if (key == 'w' || keyCode == UP) {
+  if (estadoActual == ESTADO_JUGANDO || estadoActual == ESTADO_NIVEL2 || estadoActual == ESTADO_HORDA){ /** El protagonista se movera siempre y cuando se encuentre en algunos de los estados de juego*/
+
+    if (key == 'w' || keyCode == UP) { /** mover hacia arriba con flecha o w*/
+
         joypad.setUpPressed(true);
     }
-    if (key == 's' || keyCode == DOWN) {
+    if (key == 's' || keyCode == DOWN) { /** mover hacia arriba con flecha o s*/
+
         joypad.setDownPressed(true);
     }
-    if (key == 'd' || keyCode == RIGHT) {
+    if (key == 'd' || keyCode == RIGHT) { /** mover hacia arriba con flecha o d*/
+
         joypad.setRightPressed(true);
     }
-    if (key == 'a' || keyCode == LEFT) {
+    if (key == 'a' || keyCode == LEFT) { /** mover hacia arriba con flecha o a*/
+
         joypad.setLeftPressed(true);
     }
     
-    if (key == ' ') {
+    if (key == ' ') { /** Ejecutar disparo con la tecla espacio*/
+
         prota.disparar();
     }
   }
     
-    if (key == 'p' || key == 'P') {
-    if (estadoActual == ESTADO_JUGANDO) {
+    if (key == 'p' || key == 'P') { /** cambiar el estado de juego a pausa siempre y cuando se encuentre en algunos de los estados de juego (no incluye menus obviamente)*/
+    if (estadoActual == ESTADO_JUGANDO || estadoActual == ESTADO_NIVEL2 || estadoActual == ESTADO_HORDA ) {
         estadoActual = ESTADO_PAUSA;
-    } else if (estadoActual == ESTADO_PAUSA) {
+    } else if (estadoActual == ESTADO_PAUSA) { /** en caso de estar en el estado de pausa se reanuda el juego*/
         estadoActual = ESTADO_JUGANDO;
     }
 }
-    if (key == ESC) {
+    if (key == ESC) { /** cerrar aplicacion */
         exit();
     }
-    if (key == 'r' && estadoActual == ESTADO_GAMEOVER) {
-        reiniciarJuego();
+    if (key == 'r' && estadoActual == ESTADO_GAMEOVER) { /** En el caso que el estado se haya cambiado a GAMEOVER el jugador presionando r puede volver al estado jugando desde el primer nivel*/
+        reiniciarJuego(); /** reinicia el juego en su totalidad antes de cambiar el estado*/
         estadoActual = ESTADO_JUGANDO;
     }
-    if (key == 'm' || key == 'M') {
-    audio.toggleMute();
-  }
+    if (key == 'e' && estadoActual == ESTADO_GAMEOVER) { /** En otro caso el jugador puede optar por ingresar al menu princial desde el gameover*/
+        reiniciarJuego(); /** reinicia el juego en su totalidad antes de cambiar el estado*/
+        estadoActual = ESTADO_MENU;
+    }
+    
+    if (key == 'n' && estadoActual == ESTADO_NIVEL2MENU) {
+        estadoActual = ESTADO_NIVEL2;
+        reiniciarGeneracionNivel2();
+    }
+    
+    
+  
+  if (key == 'r' && estadoActual == ESTADO_GAMEOVER) { /** por alguna razon esta duplicado, ver */
+    audio.detenerMusicaActual(); // detener cualquier música activa
+    reiniciarJuego();
+    estadoActual = ESTADO_JUGANDO;
+    
+    
+    
+}
+
+
+
+if (key == 'e' && estadoActual == ESTADO_GAMEOVER) { /** por alguna razon esta duplicado, ver */
+    audio.detenerMusicaActual();
+    reiniciarJuego();
+    estadoActual = ESTADO_MENU; // volver al menu desde el gameover
+}
+
+
+
+if (key == 'r' && estadoActual == ESTADO_CREDITOS) {
+    audio.detenerMusicaActual();
+    reiniciarJuego();
+    estadoActual = ESTADO_MENU;
+}
+
+
+if (key == 'm' || key == 'M') {
+    if (muteado == false){
+      muteado = true;
+    }  else {
+      muteado = false;
+    }
+    audio.toggleMute(muteado);
+}
+if (key == '{'){
+  audio.setVolumen(volumen - 0.1);
+   println("Volumen actual: " + nf(volumen, 1, 2));
+}
+if (key == '}'){
+  audio.setVolumen(volumen + 0.1);
+  println("Volumen actual: " + nf(volumen, 1, 2));
+}
     
  }
     
 
-public void keyReleased() {
+public void keyReleased() { /** control de teclas cuando dejan de ser pulsadas */
     if (key == 'w' || keyCode == UP) {
         joypad.setUpPressed(false);
     }
@@ -318,367 +414,3 @@ public void keyReleased() {
         joypad.setLeftPressed(false);
     }
 }
-
-
-
-
-
-
-
-/* Cementerio
-
-/*
-        Antigua logica del juego nivel 1
-
-        image(fondo1,0,0);
-        translate(width / 2 - prota.getPosicion().x, height / 2 - prota.getPosicion().y); // Seguimiento de cámara
-        
-        // Actualizar y mostrar el protagonista
-        prota.update(deltaTime);
-        prota.display(protagonista);
-        
-        // Actualizar y mostrar enemigos
-        for (int i = enemigos.size() - 1; i >= 0; i--) {
-            Enemigo e = enemigos.get(i);
-            e.update(prota, deltaTime);
-            e.display();
-            
-            // Agregar proyectiles enemigos
-            for (Proyectil p : e.getProyectiles()) {
-                if (!proyectilesEnemigos.contains(p)) {
-                    proyectilesEnemigos.add(p);
-                }
-            }
-        }
-        
-        // Mostrar lucky blocks y detectar colisiones
-          for (int i = luckyblock.size() - 1; i >= 0; i--) {
-              Lucky lucky = luckyblock.get(i);
-              lucky.display();
-              
-        // Detectar colisión con el protagonista
-              if (PVector.dist(lucky.posicion, prota.getPosicion()) < 20) { // Ajusta el valor según el tamaño
-                  lucky.aplicarEfecto(prota); // Aplicar efecto al protagonista
-                  luckyblock.remove(i); // Eliminar lucky block después de recogerlo
-              }
-          }
-        
-        // Actualizar y mostrar proyectiles enemigos
-        for (int i = proyectilesEnemigos.size() - 1; i >= 0; i--) {
-            Proyectil p = proyectilesEnemigos.get(i);
-            p.update(deltaTime);
-            p.display();
-            
-            // Detectar colisión con el protagonista
-            if (PVector.dist(p.getPosicion(), prota.getPosicion()) < prota.getRadio() + p.getRadio()) {
-                proyectilesEnemigos.remove(i);
-                prota.recibirDano();
-                if (prota.getVidas() <= 0) {
-                    prota.guardarPuntuacion();
-                    estadoActual = ESTADO_GAMEOVER;
-                }
-            }
-            
-            // Eliminar proyectiles fuera de pantalla
-            if (p.estaFueraDePantalla()) {
-                proyectilesEnemigos.remove(i);
-            }
-        }
-        
-        // Colisión de proyectiles del jugador con enemigos
-        for (Proyectil pJugador : prota.getProyectiles()) {
-            for (int i = enemigos.size() - 1; i >= 0; i--) {
-                Enemigo e = enemigos.get(i);
-                
-                float distancia = PVector.dist(pJugador.getPosicion(), e.getPosicion());
-                float sumaRadios = e.getRadio() + pJugador.getRadio();
-                
-                if (distancia < sumaRadios) {
-                    // Eliminar el enemigo
-                    enemigos.remove(i);
-                    prota.aumentarPuntaje(100);
-                    
-                    
-                    /* Bloqueado solo para modo supervivencia
-                    if (HORDA == true){
-                    
-                    }
-                    // Agregar dos nuevos enemigos
-                    for (int j = 0; j < 1; j++) {
-                        PVector nuevaPosicion = new PVector(random(0, 2400), random(0, 1600));
-                         enemigos.add(new Enemigo(nuevaPosicion));
-                         enemigos.add(new EnemigoLento(nuevaPosicion,enemigo1));
-                         enemigos.add(new Enemigo(nuevaPosicion));
-                         enemigos.add(new EnemigoRapido(nuevaPosicion,enemigo3));
-                         
-                    }*/
-                     /*
-                    break; // Salir del bucle después de eliminar un enemigo
-                }
-            }
-        }
-        
-        
-        
-        
-        
-        
-        
-         // Dibujar mensaje
-        mensajeFlotante.dibujar();
-        mensajeFlotante.actualizar(deltaTime);
-        
-        if (prota.getScore() >= 500 && nivel == 1) {
-          nivel = 2;
-          estadoActual = ESTADO_NIVEL2;
-          reiniciarGeneracionNivel2(); // Llama a un método para reiniciar la generación
-      }
-        
-        // Controles del jugador - MOVIMIENTO
-        if (joypad.isUpPressed()) {
-            prota.mover(0, deltaTime);
-        }
-        if (joypad.isRightPressed()) {
-            prota.mover(1, deltaTime);
-        }
-        if (joypad.isDownPressed()) {
-            prota.mover(2, deltaTime);
-        }
-        if (joypad.isLeftPressed()) {
-            prota.mover(3, deltaTime);
-        }
-        
-        // Mostrar HUD
-        mostrarHUD();
-        
-        if (prota.getScore() >= 500 && nivel == 1) {
-        nivel = 2;
-        estadoActual = ESTADO_NIVEL2;
-        }
-        
-    }
-        
-*/
-
-
-/*    Logica del nivel 2
-
-
-void actualizarNivel2(float deltaTime) {
-  
-        image(fondo2,0,0);
-        translate(width / 2 - prota.getPosicion().x, height / 2 - prota.getPosicion().y); // Seguimiento de cámara
-        
-        // Actualizar y mostrar el protagonista
-        prota.update(deltaTime);
-        prota.display(protagonista);
-        
-        // Actualizar y mostrar enemigos
-        for (int i = enemigos.size() - 1; i >= 0; i--) {
-            Enemigo e = enemigos.get(i);
-            e.update(prota, deltaTime);
-            e.display();
-            
-            // Agregar proyectiles enemigos
-            for (Proyectil p : e.getProyectiles()) {
-                if (!proyectilesEnemigos.contains(p)) {
-                    proyectilesEnemigos.add(p);
-                }
-            }
-        }
-        
-        // Mostrar lucky blocks y detectar colisiones
-          for (int i = luckyblock.size() - 1; i >= 0; i--) {
-              Lucky lucky = luckyblock.get(i);
-              lucky.display();
-              
-        // Detectar colisión con el protagonista
-              if (PVector.dist(lucky.posicion, prota.getPosicion()) < 20) { // Ajusta el valor según el tamaño
-                  lucky.aplicarEfecto(prota); // Aplicar efecto al protagonista
-                  luckyblock.remove(i); // Eliminar lucky block después de recogerlo
-              }
-          }
-        
-        // Actualizar y mostrar proyectiles enemigos
-        for (int i = proyectilesEnemigos.size() - 1; i >= 0; i--) {
-            Proyectil p = proyectilesEnemigos.get(i);
-            p.update(deltaTime);
-            p.display();
-            
-            // Detectar colisión con el protagonista
-            if (PVector.dist(p.getPosicion(), prota.getPosicion()) < prota.getRadio() + p.getRadio()) {
-                proyectilesEnemigos.remove(i);
-                prota.recibirDano();
-                if (prota.getVidas() <= 0) {
-                    estadoActual = ESTADO_GAMEOVER;
-                    prota.guardarPuntuacion();
-                }
-            }
-            
-            // Eliminar proyectiles fuera de pantalla
-            if (p.estaFueraDePantalla()) {
-                proyectilesEnemigos.remove(i);
-            }
-        }
-        
-        // Colisión de proyectiles del jugador con enemigos
-        for (Proyectil pJugador : prota.getProyectiles()) {
-            for (int i = enemigos.size() - 1; i >= 0; i--) {
-                Enemigo e = enemigos.get(i);
-                
-                float distancia = PVector.dist(pJugador.getPosicion(), e.getPosicion());
-                float sumaRadios = e.getRadio() + pJugador.getRadio();
-                
-                if (distancia < sumaRadios) {
-                    // Eliminar el enemigo
-                    enemigos.remove(i);
-                    prota.aumentarPuntaje(100); // Aumentar el puntaje
-                    
-                     /*
-                    // Agregar dos nuevos enemigos
-                    for (int j = 0; j < 1; j++) {
-                        PVector nuevaPosicion = new PVector(random(0, 2400), random(0, 1600));
-                         enemigos.add(new Enemigo(nuevaPosicion));
-                         enemigos.add(new EnemigoLento(nuevaPosicion,enemigo1));
-                         enemigos.add(new Enemigo(nuevaPosicion));
-                         enemigos.add(new EnemigoRapido(nuevaPosicion,enemigo3));
-                         
-                    }
-                    */
-                    
-                    /*
-                    break; // Salir del bucle después de eliminar un enemigo
-                }
-            }
-        }
-        
-         // Dibujar mensaje
-        mensajeFlotante.dibujar();
-        mensajeFlotante.actualizar(deltaTime);
-        
-        // Controles del jugador - MOVIMIENTO
-        if (joypad.isUpPressed()) {
-            prota.mover(0, deltaTime);
-        }
-        if (joypad.isRightPressed()) {
-            prota.mover(1, deltaTime);
-        }
-        if (joypad.isDownPressed()) {
-            prota.mover(2, deltaTime);
-        }
-        if (joypad.isLeftPressed()) {
-            prota.mover(3, deltaTime);
-        }
-        
-        // Mostrar HUD
-        mostrarHUD();
-        
-        if (enemigos.isEmpty()) {
-        estadoActual = ESTADO_MENU;
-        return;
-    }
-  
-  
-}
-*/
-
-
-/* Antigua visual
-
-void dibujarMenu() {
-    background(40);
-    
-    // Título del juego
-    fill(255, 215, 0); // Color dorado
-    textFont(fontTitulo);
-    textAlign(CENTER, CENTER);
-    text("SPACE SHOOTER", width / 2, 100);
-    
-    // Botones de control de volumen
-    fill(255);
-    rect(width-200, 50, 30, 30); // Botón -
-    rect(width-150, 50, 30, 30); // Botón +
-    rect(width-100, 50, 60, 30); // Botón mute
-    
-    // Textos
-    text("Volumen: " + int(volumen*100) + "%", width-200, 40);
-    text("-", width-195, 70); 
-    text("+", width-145, 70);
-    text(musicaActiva ? "Mute" : "Unmute", width-95, 70);
-    
-    // Mejores puntuaciones
-    fill(200);
-    textFont(fontTexto);
-    textAlign(CENTER);
-    text("MEJORES PUNTUACIONES", width / 2, 180);
-    
-    // Lista de puntuaciones
-    fill(255);
-    for (int i = 0; i < min(5, mejoresPuntuaciones.size()); i++) {
-        text((i + 1) + ". " + mejoresPuntuaciones.get(i), width / 2, 230 + i * 40);
-    } 
-    
-    // Botón Iniciar Juego
-    fill(0, 255, 0);
-    rect(width / 2 - 100, 450, 200, 60, 10);
-    fill(0);
-    textAlign(CENTER, CENTER);
-    text("INICIAR JUEGO", width / 2, 480);
-    
-    // Botón Salir
-    fill(255, 0, 0);
-    rect(width / 2 - 100, 530, 200, 60, 10);
-    fill(0);
-    text("SALIR", width / 2, 560);
-}
-
-void mostrarPausa() {
-    fill(0, 150);
-    rect(0, 0, width, height);
-    fill(255);
-    textAlign(CENTER, CENTER);
-    textSize(48);
-    text("PAUSA", width / 2, height / 2 - 40);
-    textSize(24);
-    text("Presiona 'P' para reanudar", width / 2, height / 2 + 10);
-    // Botón para silenciar/reactivar música
-    // Añadir controles de audio en la pausa
-  fill(255);
-  rect(width/2 - 100, height/2 + 60, 200, 40);
-  fill(0);
-  text("Mute/Unmute [M]", width/2 - 80, height/2 + 85);
-}
-
-
-void mostrarGameOver() {
-    background(0);
-    fill(255);
-    textSize(60);
-    textAlign(CENTER, CENTER);
-    text("GAME OVER", width / 2, height / 2);
-    textSize(30);
-    text("Score: " + prota.getScore(), width / 2, height / 2 + 60);
-    text("Presiona 'R' para reiniciar", width / 2, height / 2 + 100);
-}
-
-void mostrarHUD() {
-    pushMatrix();
-    resetMatrix(); 
-    fill(255);
-    textSize(24);
-    textAlign(LEFT);
-    text("Vidas: " + prota.getVidas(), 20, 40);
-    text("Score: " + prota.getScore(), 20, 70); // Obtener el puntaje desde Protagonista
-    popMatrix();
-}
-
-void mostrarNivel2() {
-    background(0);
-    fill(255);
-    textSize(60);
-    textAlign(CENTER, CENTER);
-    text("¡Felicidades! Has alcanzado el Nivel 2", width / 2, height / 2 - 40);
-    textSize(30);
-    text("Haz click aqui para continuar", width / 2, height / 2 + 20);
-}
-*/

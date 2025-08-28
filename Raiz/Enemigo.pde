@@ -1,15 +1,16 @@
 // Atributos
 class Enemigo {
-    protected PVector posicion;          // Cambiado a protected
-    protected PVector velocidad;         // Cambiado a protected
-    protected float radio = 20;          // Cambiado a protected
-    protected ArrayList<Proyectil> proyectiles; // Cambiado a protected
-    protected int tiempoDisparo = 0;     // Cambiado a protected
-    protected int intervaloDisparo = 90; // Cambiado a protected
-    protected color colorEnemigo;        // Cambiado a protected
+  /** Atributos de la clase enemigo, tipo protected para poder ser modificados segun el tipo de enemigo que se herede */
+    protected PVector posicion;          /** */
+    protected PVector velocidad;         /** */
+    protected float radio = 20;          /** */
+    protected ArrayList<Proyectil> proyectiles; /** */
+    protected int tiempoDisparo = 0;     /** */
+    protected int intervaloDisparo = 90; /** */
+    protected color colorEnemigo;        /** */
 
 
-
+/** */
   public Enemigo(PVector posicion) {
         this.posicion = posicion;
         this.velocidad = new PVector(random(60), random(60)); //modificar velocidad
@@ -18,7 +19,7 @@ class Enemigo {
         this.colorEnemigo = color(255,0,0);
    }
   
-  // dibujar  
+  /** funcion para dibujar al enemigo base*/
   public void display(){
   fill(colorEnemigo);
   strokeWeight(5);
@@ -26,33 +27,32 @@ class Enemigo {
             p.display();
     }
   }
-  // actualizar
+  /** funcion para actualizar a cada enemigo del campo en movimiento y disparo*/
   public void update (Protagonista prota, float deltaTime){
     mover(deltaTime);
     disparar(prota);
     actualizarProyectiles();
   }
   
-  // logica del moviimiento y colisiones con el borde del mapa
-  public void mover(float deltaTime) {
-      // Mueve el enemigo según su velocidad
-      this.posicion.add(PVector.mult(this.velocidad, deltaTime)); // Ajustar la velocidad por deltaTime
-      // Verifica si el enemigo se sale de los bordes y rebota
+  /** logica del moviimiento y colisiones con el borde del mapa */ 
+  public void mover(float deltaTime) {   
+      this.posicion.add(PVector.mult(this.velocidad, deltaTime)); /** logica del moviimiento y colisiones con el borde del mapa Ajustado por deltaTime */ 
+      /** verifica si el enemigo se encuentra en los bordes y lo hace rebotar como el logo de dvd*/
       if (this.posicion.x < 0) {
-          this.posicion.x = 0; // Asegúrate de que no se salga
-          this.velocidad.x *= -1; // Invertir dirección en x
+          this.posicion.x = 0; 
+          this.velocidad.x *= -1; 
       }
       if (this.posicion.x > 2400) {
-          this.posicion.x = 2400; // Asegúrate de que no se salga
-          this.velocidad.x *= -1; // Invertir dirección en x
+          this.posicion.x = 2400; 
+          this.velocidad.x *= -1; 
       }
       if (this.posicion.y < 0) {
-          this.posicion.y = 0; // Asegúrate de que no se salga
-          this.velocidad.y *= -1; // Invertir dirección en y
+          this.posicion.y = 0; 
+          this.velocidad.y *= -1; 
       }
       if (this.posicion.y > 1600) {
-          this.posicion.y = 1600; // Asegúrate de que no se salga
-          this.velocidad.y *= -1; // Invertir dirección en y
+          this.posicion.y = 1600; 
+          this.velocidad.y *= -1; 
       }
     }
     
