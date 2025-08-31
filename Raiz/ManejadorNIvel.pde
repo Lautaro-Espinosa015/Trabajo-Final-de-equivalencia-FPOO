@@ -1,129 +1,103 @@
 class ManejadorNivel {
-    PImage fondo;
-    ArrayList<Enemigo> enemigos;
-    ArrayList<Proyectil> proyectilesEnemigos;
-    ArrayList<Lucky> luckyblock;
-
+    PImage fondo; /** imagen de fondo*/
+    ArrayList<Enemigo> enemigos; /** Lista de enemigos en el nivel*/
+    ArrayList<Proyectil> proyectilesEnemigos; /** Proyectiles disparados*/
+    ArrayList<Lucky> luckyblock; /** bloques especiales*/
+    
+     
+    /** Constructor*/
+    
     ManejadorNivel(PImage fondo, ArrayList<Enemigo> enemigos, ArrayList<Proyectil> proyectilesEnemigos, ArrayList<Lucky> luckyblock) {
         this.fondo = fondo;
         this.enemigos = enemigos;
         this.proyectilesEnemigos = proyectilesEnemigos;
         this.luckyblock = luckyblock;
     }
-
+    /** Metodo principal de actualizacion*/
     void actualizar(float deltaTime, Protagonista prota, JoyPad joypad, Runnable condicionEspecial) {
-        // Fondo y cámara
-        image(fondo, 0, 0);
-        translate(width / 2 - prota.getPosicion().x, height / 2 - prota.getPosicion().y);
-
-        // Protagonista
-        prota.update(deltaTime);
-        prota.display(protagonista);
         
+        image(fondo, 0, 0); /** Dibuja la imagen */
+        translate(width / 2 - prota.getPosicion().x, height / 2 - prota.getPosicion().y); /** ajusta la camara para centrar al protagonista*/
 
-        // Enemigos
+        
+        prota.update(deltaTime); /** Actualiza el estado del protagonista*/
+        prota.display(protagonista); /** Dibuja al protagonista*/
+        
+/** */
+
+        /** Actualiza el comportamiento de enemigos*/
         for (int i = enemigos.size() - 1; i >= 0; i--) {
             Enemigo e = enemigos.get(i);
-            e.update(prota, deltaTime);
-            e.display();
-            for (Proyectil p : e.getProyectiles()) {
+            e.update(prota, deltaTime); /** Comportamientos, seguir, atacar */
+            e.display(); /** Dibujo del enemigo*/
+            for (Proyectil p : e.getProyectiles()) { /** Agrega proyectiles a la lista*/
                 if (!proyectilesEnemigos.contains(p)) {
                     proyectilesEnemigos.add(p);
                 }
             }
         }
 
-        // Lucky blocks
+        /** Actualiza el efecto del luckyblock*/
         for (int i = luckyblock.size() - 1; i >= 0; i--) {
             Lucky lucky = luckyblock.get(i);
-            lucky.display();
-            if (PVector.dist(lucky.posicion, prota.getPosicion()) < 20) {
-                lucky.aplicarEfecto(prota);
+            lucky.display(); /** Dibuja el lucky*/
+            if (PVector.dist(lucky.posicion, prota.getPosicion()) < 20) { /** Si el protagonista toca el bloque*/
+                lucky.aplicarEfecto(prota); /** Aplica el efecto y elimina el bloque*/
                 luckyblock.remove(i);
             }
         }
 
-        // Proyectiles enemigos
+        /** Actualiza el comportamiento de los proyectiles de enemigos respecto del jugador*/
         for (int i = proyectilesEnemigos.size() - 1; i >= 0; i--) {
             Proyectil p = proyectilesEnemigos.get(i);
-            p.update(deltaTime);
-            p.display();
+            p.update(deltaTime); /** mover el proyectil */
+            p.display(); /** dibujar el proyectil*/
+            /** Colision con el protagonista*/
             if (PVector.dist(p.getPosicion(), prota.getPosicion()) < prota.getRadio() + p.getRadio()) {
                 proyectilesEnemigos.remove(i);
-                prota.recibirDano();
+                prota.recibirDano(); /** quitar vidas al protagonista*/
                 if (prota.getVidas() <= 0) {
-                    estadoActual = ESTADO_GAMEOVER;
+                    estadoActual = ESTADO_GAMEOVER; /** GameOver al llegar a vidas=0*/
                     prota.guardarPuntuacion();
                 }
             }
-            if (p.estaFueraDePantalla()) {
+            if (p.estaFueraDePantalla()) { /** Si el proyectil esta fuera de pantalla se borra*/
                 proyectilesEnemigos.remove(i);
             }
         }
         
-        /*
-        // Colisiones de proyectiles del jugador con enemigos
-        for (Proyectil pJugador : prota.getProyectiles()) {
-            for (int i = enemigos.size() - 1; i >= 0; i--) {
-                Enemigo e = enemigos.get(i);
-                if (PVector.dist(pJugador.getPosicion(), e.getPosicion()) < e.getRadio() + pJugador.getRadio()) {
-                    enemigos.remove(i);
-                    prota.aumentarPuntaje(100);
-                    
-                    // Bloqueado solo para modo supervivencia
-                    if (HORDA == true){
-                      if (PVector.dist(pJugador.getPosicion(), e.getPosicion()) < e.getRadio() + pJugador.getRadio()) {
-                        prota.ganarVidas();
-                      }
-                    // Agrega un set de nuevos enemigos
-                    for (int j = 0; j < 1; j++) {
-                        PVector nuevaPosicion = new PVector(random(0, 2400), random(0, 1600));
-                         enemigos.add(new EnemigoFuerte(nuevaPosicion,enemigo2));
-                         enemigos.add(new EnemigoLento(nuevaPosicion,enemigo1));
-                         PVector nuevaPosicion1 = new PVector(random(0, 2400), random(0, 1600));
-                         enemigos.add(new Enemigo(nuevaPosicion1));
-                         PVector nuevaPosicion2 = new PVector(random(0, 2400), random(0, 1600));
-                         enemigos.add(new EnemigoRapido(nuevaPosicion2,enemigo3));                        
-                    }
-                    
-                    }
-                    break;
-                }
-            }
-        }
-        */
-        
-        // Colisiones de proyectiles del jugador con enemigos
+       
+/** Actualiza el comportamiento de los proyectiles del jugador respecto de enemigos*/
 for (Proyectil pJugador : prota.getProyectiles()) {
     for (int i = enemigos.size() - 1; i >= 0; i--) {
         Enemigo e = enemigos.get(i);
 
-        // Verificar colisión
+        /** Verifica la colision*/
         if (PVector.dist(pJugador.getPosicion(), e.getPosicion()) < e.getRadio() + pJugador.getRadio()) {
             
-            // Remover enemigo
+               /** remueve el enemigo*/
             enemigos.remove(i);
-            // Sumar puntos
+               /** suma 100 puntos*/
             prota.aumentarPuntaje(100);
             
-            // Si es modo horda, reponer enemigos
+               /** solo en caso de que el modo horda este activo*/
             if (HORDA) {
-                prota.ganarVidas(); // Ganar vida extra
+                prota.ganarVidas();    /** vidas extra*/
                 
-                // Cantidad aleatoria entre 1 y 3 enemigos nuevos
+                   /** generar una cantidad aleatoria de enemigos nuevos 1,3 */
                 int cantidad = int(random(1, 4));
 
-                // Límite de enemigos activos (ej: 30)
+                   /** Limite maximo de enemigos en el campo*/
                 int limiteMaximo = 100;
 
                 for (int j = 0; j < cantidad; j++) {
-                    if (enemigos.size() >= limiteMaximo) break; // No pasar del límite
+                    if (enemigos.size() >= limiteMaximo) break;    /** Generacion de enemigos*/
 
-                    // Posición aleatoria
+                       /** Nueva posicion aleatoria del enemigo*/
                     PVector nuevaPosicion = new PVector(random(0, 2400), random(0, 1600));
                     
-                    // Tipo aleatorio
-                    int tipo = int(random(4)); // 0 a 3
+                       /** Tipo del enemigo que se generará*/
+                    int tipo = int(random(4)); 
                     switch (tipo) {
                         case 0:
                             enemigos.add(new EnemigoFuerte(nuevaPosicion, enemigo2));
@@ -135,33 +109,33 @@ for (Proyectil pJugador : prota.getProyectiles()) {
                             enemigos.add(new EnemigoRapido(nuevaPosicion, enemigo3));
                             break;
                         default:
-                            enemigos.add(new Enemigo(nuevaPosicion)); // Genérico
+                            enemigos.add(new Enemigo(nuevaPosicion)); 
                             break;
                     }
                 }
             }
 
-            break; // Salir del bucle de enemigos al detectar una colisión
+            break; 
         }
     }
 }
 
         
         
-        // Mensaje flotante
+           /** Mensaje flotante para la ui*/
         mensajeFlotante.dibujar();
         mensajeFlotante.actualizar(deltaTime);
 
-       // Controles
+          /**Controles dentro del nivel */
         if (joypad.isUpPressed()) prota.mover(0, deltaTime);
         if (joypad.isRightPressed()) prota.mover(1, deltaTime);
         if (joypad.isDownPressed()) prota.mover(2, deltaTime);
         if (joypad.isLeftPressed()) prota.mover(3, deltaTime);
 
-        // HUD
+           /** HUD en pantalla*/
         gestorPantallas.mostrarHUD();
 
-        // Condición especial de cada nivel
+           /** CondicionEspecial para poder avanzar al siguiente nivel*/
         if (condicionEspecial != null) {
             condicionEspecial.run();
         }

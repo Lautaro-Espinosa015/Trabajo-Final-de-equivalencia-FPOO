@@ -1,27 +1,30 @@
 // Atributos
 class Protagonista {
-private PVector posicion;
-private PVector velocidad;
-private ArrayList<Proyectil> proyectiles;
-private int vidas = 500;
-private float radio = 20;
-private int score = 0;
-private float tiempoEntreDisparos = 0.25f;
-private float tiempoUltimoDisparo = 0;
+private PVector posicion; /** Atributo para la posicon*/
+private PVector velocidad; /** Atributo para la velocidad*/
+private ArrayList<Proyectil> proyectiles; /** Array para la gestion de proyectiles*/
+private int vidas = 500; /** Cantidad de vidas del protagonista*/
+private float radio = 20; /** Hitbox del protagonista*/
+private int score = 0; /** Puntuacion del protagonista a lo largo del juego*/
+private float tiempoEntreDisparos = 0.25f; /** coldown entre disparos*/
+private float tiempoUltimoDisparo = 0; /** Temporarizador de disparos */
 private boolean puedeDisparar = true;
  private boolean invulnerable = false;
 private float tiempoInvulnerable = 0;
-private PImage protagonista;
+private PImage protagonista; /** textura del protagonista*/
 private boolean DobleDisparo = false;
 private float tiempoSinDisparo= 0 ;
-   public Protagonista() {
+
+   public Protagonista() { /** metodos accesores*/
         this.posicion = new PVector(width/2, height/2);
         this.velocidad = new PVector(5, 5);
         this.proyectiles = new ArrayList<Proyectil>();
         this.protagonista = protagonista;
   }
+  
+/** */
     
-  // dibujar  
+  /** funcion para dibujar al protagonista + dibujo del proyectil al invocarse*/
   public void display(PImage protagonista){
   fill(255,0,0);
   strokeWeight(5);
@@ -32,46 +35,48 @@ private float tiempoSinDisparo= 0 ;
     }
   }
 
-// logica del moviimiento y colisiones con el borde del mapa
+/** logica del moviimiento y colisiones con el borde del mapa */ 
   public void mover(int direccion, float deltaTime) {
         float velocidadActual = 300 * deltaTime;
         
         switch(direccion) {
-        case 0: // Arriba
+        case 0: /**Arriba */ 
             this.posicion.y -= velocidadActual;
             if (this.posicion.y < 0) this.posicion.y = 0;
             break;  
-        case 1: // Derecha
+        case 1: /** Derecha*/ 
             this.posicion.x += velocidadActual;
             if (this.posicion.x > 2400) this.posicion.x = 2400;
             break;
-        case 2: // Abajo
+        case 2: /**Abajo */ 
             this.posicion.y += velocidadActual;
             if (this.posicion.y > 1600) this.posicion.y = 1600;
             break;  
-        case 3: // Izquierda
+        case 3: /** Izquierda*/ 
             this.posicion.x -= velocidadActual;
             if (this.posicion.x < 0) this.posicion.x = 0;
             break;
       }
     }
     
-    // Logica de disparo del protagonista + limitacion de balas
+    /** */
+    
+    /** Logica de disparo del protagonista + limitacion de balas */ 
         public void disparar() {
      if (tiempoSinDisparo == 0){
     if (puedeDisparar) {
-        PVector direccion = new PVector(0, -1);  // Dirección fija hacia arriba (eje Y negativo)
-        direccion.mult(500);  // Velocidad del proyectil (500 píxeles/segundo)
+        PVector direccion = new PVector(0, -1);  /** Genera un PVector direccion con una Dirección fija hacia arriba (eje Y negativo) */
+        direccion.mult(500);  /** Velocidad del proyectil (500 píxeles/segundo) */
         
-        Proyectil nuevoProyectil = new Proyectil(
-            new PVector(posicion.x, posicion.y - radio),  // Posición inicial ajustada
-            color(0, 255, 0),  // Color verde para distinguirlas
+        Proyectil nuevoProyectil = new Proyectil( /** Objeto proyectil con los parametros de posicion color, direccion y daño*/
+            new PVector(posicion.x, posicion.y - radio),  
+            color(0, 255, 0),   /**  Color verde para distinguirlas */
             direccion, 
-            1  // Daño del proyectil
+            1   /** Daño del proyectil */ 
         );
         proyectiles.add(nuevoProyectil);
-        puedeDisparar = false;
-        tiempoUltimoDisparo = 0;  // Reiniciar el temporizador
+        puedeDisparar = false; /** Activacion del coldown*/
+        tiempoUltimoDisparo = 0;  /** Reiniciar el temporizador entre disparos */  
     }
     
     if (DobleDisparo){
@@ -95,7 +100,7 @@ private float tiempoSinDisparo= 0 ;
 }
         }
     
-   public void update(float deltaTime) {
+   public void update(float deltaTime) { /** Logicas de actualizacion del protagonista */
     // Actualizar temporizador de disparo
     if (invulnerable) {
       tiempoInvulnerable -= deltaTime;
@@ -103,24 +108,24 @@ private float tiempoSinDisparo= 0 ;
         invulnerable = false;
       }
     }
-        // Actualizar temporizador de disparo
+         /** Actualizar temporizador de disparo */
         if (!puedeDisparar) {
             tiempoUltimoDisparo += deltaTime;
-            if (tiempoUltimoDisparo >= tiempoEntreDisparos) {
-                puedeDisparar = true; // Permitir disparar de nuevo
-                tiempoUltimoDisparo = 0; // Reiniciar el temporizador
+            if (tiempoUltimoDisparo >= tiempoEntreDisparos) {  /** El tiempo entre disparos lo delimita los frames ya pasados (para que no sea como "un laser"*/
+                puedeDisparar = true;  /** Permitir disparar de nuevo  */
+                tiempoUltimoDisparo = 0;  /**Reiniciar el temporizador */
             }
         }
-        // Actualizar el tiempo sin disparo
+        /** Actualizar el tiempo sin disparo */ 
         if (tiempoSinDisparo > 0) {
             tiempoSinDisparo -= deltaTime;
             if (tiempoSinDisparo <= 0) {
-                puedeDisparar = true; // Permitir disparar de nuevo
-                tiempoSinDisparo = 0; // Reiniciar el temporizador
+                puedeDisparar = true; 
+                tiempoSinDisparo = 0; 
             }
     }
     
-    // Actualizar posición de proyectiles existentes
+    /** borrado de proyectiles que se salen de la pantalla  */ 
     for (int i = proyectiles.size() - 1; i >= 0; i--) {
         Proyectil p = proyectiles.get(i);
         p.update(deltaTime);
@@ -130,28 +135,33 @@ private float tiempoSinDisparo= 0 ;
     }
 }
       
-    
+    /** Funcion para restar vidas del protagonista*/
    public void recibirDano() {
-    if (!invulnerable) { // Solo reduce vidas si no está invulnerable
+    if (!invulnerable) { /** Solo reduce vidas si no está invulnerable */ 
         vidas--;
     }
     
    }
    
+   /** Funcion de ganar vidas SOLO EN MODO HORDA */
    public void ganarVidas(){
-     if (vidas < 1200){
+     if (vidas < 1200){  /** Limite de vidas*/
      vidas+=5;
      }      
    }
    
-   public void aumentarVelocidad(float incremento){
+   /** Metodos accesores */
+   
+   public void aumentarVelocidad(float incremento){ //no se usa
      this.velocidad.add(new PVector (incremento,incremento));
    }
    
-   public void reducirVelocidad (float decremento){
+   public void reducirVelocidad (float decremento){ //no se usa
      this.velocidad.add(new PVector (decremento,decremento));
      this.velocidad.limit(0);
    }
+   
+   
    public void setInvulnerable (float duracion){
      this.invulnerable = true;
      this.tiempoInvulnerable = duracion;
@@ -174,16 +184,20 @@ private float tiempoSinDisparo= 0 ;
   
   }
   
-   public void cargarPuntuacion() {
-    String[] datos = loadStrings("puntuacion.txt"); // Cargar el archivo
+  public int getScore(){
+return this.score;
+}
+  
+   public void cargarPuntuacion() { //no se usa
+    String[] datos = loadStrings("puntuacion.txt"); 
     if (datos.length > 0) {
-        score = Integer.parseInt(datos[0]); // Convertir el primer elemento a entero
+        score = Integer.parseInt(datos[0]); 
     }
 }
   
-  public void guardarPuntuacion() {
-    String[] datos = {String.valueOf(score)}; // Convertir el puntaje a String
-    saveStrings("puntuacion.txt", datos); // Guardar en un archivo
+  public void guardarPuntuacion() { //no se usa
+    String[] datos = {String.valueOf(score)}; 
+    saveStrings("puntuacion.txt", datos); 
 }
  
   public ArrayList<Proyectil> getProyectiles() {
@@ -206,6 +220,8 @@ public float getRadio() {
     return radio;
 }
 
+/** Logica de puntuacion */
+
 public void aumentarPuntaje(int cantidad) {
     score += cantidad; // Aumentar el puntaje
     println("score actual del prota: "+ score) ;
@@ -217,9 +233,7 @@ public void reducirPuntaje(int cantidad) {
 
 
 
-public int getScore(){
-return this.score;
-}
+
 
 
 }
