@@ -1,10 +1,10 @@
 class GestorPantallas {
   
-  PFont fontTitulo, fontTexto;
+  PFont fontTitulo, fontTexto; /** Fuentes del gestor de pantallas*/
   ArrayList<Integer> mejoresPuntuaciones;
   float volumen;
   boolean musicaActiva;
-  Protagonista prota;
+  Protagonista prota; /** objeto protagonista*/
 
   GestorPantallas(PFont fontTitulo, PFont fontTexto, ArrayList<Integer> mejoresPuntuaciones,
                   float volumen, boolean musicaActiva, Protagonista prota) {
@@ -16,18 +16,18 @@ class GestorPantallas {
     this.prota = prota;
   }
 
+  /** */
+  /** Menu Principal*/
   void dibujarMenu() {
-  // Fondo gris oscuro del menú
   background(40);
-  
   // ====== TÍTULO ======
-  fill(255, 215, 0); // Color dorado
-  textFont(fontTitulo); // Usar fuente del título
-  textAlign(CENTER, CENTER); // Alinear texto al centro
-  text("SPACE SHOOTER", width / 2, 100); // Título principal en la parte superior
+  fill(255, 215, 0);   /**Color dorado */
+  textFont(fontTitulo);   /**Usar fuente del título */
+  textAlign(CENTER, CENTER);  /**Alinear texto al centro */
+  text("Magic Dungeon", width / 2, 100); /**Título principal en la parte superior */
   
   
-  // ====== MEJORES PUNTUACIONES ======
+  // ====== MEJORES PUNTUACIONES ======   /** quitar */
   fill(200); // Color gris claro para el título
   textFont(fontTexto); // Fuente normal
   textAlign(CENTER);
@@ -38,25 +38,26 @@ class GestorPantallas {
     text((i + 1) + ". " + mejoresPuntuaciones.get(i), width / 2, 250 + i * 40);
   }
   
-  // ====== BOTÓN INICIAR JUEGO ======
-  fill(0, 255, 0); // Verde
+   /** ====== BOTÓN INICIAR JUEGO ====== */ 
+  fill(0, 255, 0); /** verde */
   rect(width / 2 - 150, 500, 300, 70, 15);
-  fill(0); // Texto negro
+  fill(0); /** texto negro */
   text("INICIAR JUEGO", width / 2, 535);
   
-  // ====== BOTÓN MODO HORDA ======
-  fill(0, 150, 255); // Azul
+   /** ====== BOTÓN Modo Horda ====== */ 
+  fill(0, 150, 255); /** azul */
   rect(width / 2 - 150, 600, 300, 70, 15);
-  fill(255); // Texto blanco
+  fill(255); /** texto blanco */
   text("MODO HORDA", width / 2, 635);
   
-  // ====== BOTÓN SALIR ======
-  fill(255, 0, 0); // Rojo
+   /** ====== BOTÓN SALIR ====== */
+  fill(255, 0, 0); /** rojo */
   rect(width / 2 - 150, 700, 300, 70, 15);
-  fill(0); // Texto negro
+  fill(0); /** texto negro */
   text("SALIR", width / 2, 735);
 }
 
+  /** ====== Modo pausa ====== */
   void mostrarPausa() {
     fill(0, 150);
     rect(0, 0, width, height);
@@ -67,15 +68,14 @@ class GestorPantallas {
     textSize(24);
     text("Presiona 'P' para reanudar", width / 2, height / 2 + 10);
 
-        // Botón mute/unmute centrado con más espacio vertical
+    /** Botón mute/unmute */   
     fill(255);
     rect(width/2 - 110, height/2 + 80, 220, 50, 8);
-    
     fill(0);
     textAlign(CENTER, CENTER);
     text("Mute/Unmute [M]", width/2, height/2 + 105);
   }
-
+  /** ====== Modo Gameover ====== */
   void mostrarGameOver() {
     background(0);
     fill(255);
@@ -87,7 +87,7 @@ class GestorPantallas {
     text("Presiona 'R' para reiniciar", width / 2, height / 2 + 100);
     text("Presiona 'E' para Volver al menu", width / 2, height / 2 + 150);
   }
-
+  /** ====== HUD in-game ====== */
   void mostrarHUD() {
     pushMatrix();
     resetMatrix();
@@ -98,7 +98,7 @@ class GestorPantallas {
     text("Score: " + prota.getScore(), 20, 70);
     popMatrix();
   }
-
+  /** ====== Pantalla nivel 2 ====== */
   void mostrarNivel2() {
     background(0);
     fill(255);
@@ -108,7 +108,7 @@ class GestorPantallas {
     textSize(30);
     text("Presiona n para continuar", width / 2, height / 2 + 20);
   }
-  
+  /** ====== Pantalla de fin de juego ====== */
   void mostrarGameEnd() {
     background(0);
     fill(255);
