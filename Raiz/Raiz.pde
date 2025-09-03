@@ -35,13 +35,14 @@ final int ESTADO_PAUSA = 3;
 final int ESTADO_NIVEL2 = 4;
 final int ESTADO_CREDITOS = 5;
 final int ESTADO_HORDA= 6;
+int estadoG;
 
 private boolean HORDA= false;
-private int nivel = 1;
+private int nivel = 1; /** atributo para gestion del nivel */
 private GestorAudio audio;
-private ManejadorNivel nivel1;
-private ManejadorNivel nivel2;
-private GestorPantallas gestorPantallas;
+private ManejadorNivel nivel1; /** atributo para el manejador de nivel */
+private ManejadorNivel nivel2; /** atributo para el manejador de nivel 2*/
+private GestorPantallas gestorPantallas; /** */
 
 // minim
 Minim minim;
@@ -168,16 +169,16 @@ void draw() {
         gestorPantallas.mostrarPausa(); /** Es el estado de pausa que se puede acceder en cualquier momento mediante la tecla P*/
         break;
       case ESTADO_NIVEL2MENU:
-        gestorPantallas.mostrarNivel2(); 
+        gestorPantallas.mostrarNivel2(); /** Estado que pausa el juego momentaneamente para informar que se alcanzaron las condiciones para jugar el nivel 2*/
         break; 
         case ESTADO_NIVEL2:
-        actualizarNivel2(deltaTime);
+        actualizarNivel2(deltaTime); /** Estado correspondiente al nivel 2*/
         break;
         case ESTADO_HORDA:
-        actualizarHorda(deltaTime);
+        actualizarHorda(deltaTime); /** Estado correspondiente al modo horda*/
         break;
         case ESTADO_CREDITOS:
-        gestorPantallas.mostrarGameEnd();
+        gestorPantallas.mostrarGameEnd(); /** Estado que muestra la pantalla del fin de la demo */
         break;
         
     }
@@ -201,7 +202,7 @@ void actualizarJuego(float deltaTime) {
 }
 
 
-// Nivel 2
+/** Logica del nivel 2*/
 void actualizarNivel2(float deltaTime) {
     nivel2.actualizar(deltaTime, prota, joypad, () -> {   
         if (prota.getScore() >= 2500) {
@@ -210,7 +211,7 @@ void actualizarNivel2(float deltaTime) {
     });
 }
 
-// nivel horda
+/** Logica del nivel horda*/
 void actualizarHorda(float deltaTime){
      
         HORDA = true;
@@ -338,10 +339,14 @@ public void keyPressed() {
     
     if (key == 'p' || key == 'P') { /** cambiar el estado de juego a pausa siempre y cuando se encuentre en algunos de los estados de juego (no incluye menus obviamente)*/
     if (estadoActual == ESTADO_JUGANDO || estadoActual == ESTADO_NIVEL2 || estadoActual == ESTADO_HORDA ) {
-        estadoActual = ESTADO_PAUSA;
+      estadoG = estadoActual;  /** Guarda el estado actual entre las 3 posibilidades */
+      estadoActual = ESTADO_PAUSA;
     } else if (estadoActual == ESTADO_PAUSA) { /** en caso de estar en el estado de pausa se reanuda el juego*/
-        estadoActual = ESTADO_JUGANDO;
+        estadoActual = estadoG; /** Vuelve al estado anterior */
     }
+    
+    
+    
 }
     if (key == ESC) { /** cerrar aplicacion */
         exit();
