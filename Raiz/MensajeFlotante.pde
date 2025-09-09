@@ -4,7 +4,7 @@ class MensajeFlotante {
     private PFont fuente;
     private int colorTexto;
   
-    public MensajeFlotante(PFont fuente) {
+    public MensajeFlotante(PFont fuente) { /** constructor*/
         this.fuente = fuente; 
         this.texto = "";
         this.tiempoRestante = 0;

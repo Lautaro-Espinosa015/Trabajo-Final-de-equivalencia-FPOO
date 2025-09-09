@@ -1,16 +1,16 @@
 // Atributos
 class Enemigo {
   /** Atributos de la clase enemigo, tipo protected para poder ser modificados segun el tipo de enemigo que se herede */
-    protected PVector posicion;          /** */
-    protected PVector velocidad;         /** */
-    protected float radio = 20;          /** */
-    protected ArrayList<Proyectil> proyectiles; /** */
-    protected int tiempoDisparo = 0;     /** */
-    protected int intervaloDisparo = 90; /** */
-    protected color colorEnemigo;        /** */
+    protected PVector posicion;          /** Posicion generada del enemigo*/
+    protected PVector velocidad;         /** Velocidad base del enemigo*/
+    protected float radio = 20;          /** Tamaño base del enemigo*/
+    protected ArrayList<Proyectil> proyectiles; /** Array de proyectiles propio*/
+    protected int tiempoDisparo = 0;     /** Tiempo entre disparos*/
+    protected int intervaloDisparo = 90; /** Intervalo base de disparo*/
+    protected color colorEnemigo;        /** Color base del enemigo*/
 
 
-/** */
+/** Constructor */
   public Enemigo(PVector posicion) {
         this.posicion = posicion;
         this.velocidad = new PVector(random(60), random(60)); //modificar velocidad
@@ -56,22 +56,22 @@ class Enemigo {
       }
     }
     
-    // El enemigo dispara al protagonista
+    /** Logica para el disparo del enemigo*/
   protected void disparar (Protagonista prota){
     tiempoDisparo++;
-    if(tiempoDisparo >= intervaloDisparo){
+    if(tiempoDisparo >= intervaloDisparo){ /** Se crea un cooldown para que los disparon no se acumulen demasiado entre si, para tener espacio entre disparos*/
       tiempoDisparo = 0;
       PVector direccion = PVector.sub(prota.getPosicion(), this.posicion);
       direccion.normalize();
       direccion.mult(100);
       
-      Proyectil nuevoProyectil = new Proyectil(this.posicion.copy(), color(0, 0, 255), direccion, 10);
+      Proyectil nuevoProyectil = new Proyectil(this.posicion.copy(), color(0, 0, 255), direccion, 10); /** se agrega el proyectil al array*/
       proyectiles.add(nuevoProyectil);
     }
   }
   
   // Recarga de proyectiles/eliminar proyectiles fuera del mapa
-  protected void actualizarProyectiles() {
+  protected void actualizarProyectiles() { /** Funcion eliminar proyectiles fuera del mapa para no recargar el videojuego*/
     for (int i = proyectiles.size() -1;i>=0;i--){
       Proyectil p = proyectiles.get(i);
       
@@ -80,7 +80,7 @@ class Enemigo {
       }
     }
   }
-  public ArrayList<Proyectil> getProyectiles() {
+  public ArrayList<Proyectil> getProyectiles() { /** Metodos accesores*/
         return this.proyectiles;
     }
    public PVector getPosicion() {

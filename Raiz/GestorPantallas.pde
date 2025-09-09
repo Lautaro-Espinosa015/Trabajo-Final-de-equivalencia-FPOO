@@ -6,7 +6,7 @@ class GestorPantallas {
   boolean musicaActiva;
   Protagonista prota; /** objeto protagonista*/
 
-  GestorPantallas(PFont fontTitulo, PFont fontTexto, ArrayList<Integer> mejoresPuntuaciones,
+  GestorPantallas(PFont fontTitulo, PFont fontTexto, ArrayList<Integer> mejoresPuntuaciones, /** Constructor*/
                   float volumen, boolean musicaActiva, Protagonista prota) {
     this.fontTitulo = fontTitulo;
     this.fontTexto = fontTexto;

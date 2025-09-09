@@ -15,7 +15,7 @@ private PImage protagonista; /** textura del protagonista*/
 private boolean DobleDisparo = false;
 private float tiempoSinDisparo= 0 ;
 
-   public Protagonista() { /** metodos accesores*/
+   public Protagonista() { /** constructor */
         this.posicion = new PVector(width/2, height/2);
         this.velocidad = new PVector(5, 5);
         this.proyectiles = new ArrayList<Proyectil>();
@@ -80,19 +80,19 @@ private float tiempoSinDisparo= 0 ;
     }
     
     if (DobleDisparo){
-        float angulo = random(TWO_PI); // Generar un ángulo aleatorio
-        PVector direccion = new PVector(cos(angulo), sin(angulo)); // Convertir a vector de dirección
-        direccion.mult(500);  // Velocidad del proyectil (500 píxeles/segundo)
+        float angulo = random(TWO_PI); /** Para nivelar la ventaja del doble disparo TWO_PI genera una direccion aleatoria sobre el segundo disparo*/
+        PVector direccion = new PVector(cos(angulo), sin(angulo)); /**Convierte el vector en direccion*/
+        direccion.mult(500);  /** Velocidad del disparo alterada a una más veloz*/
         
         Proyectil nuevoProyectil = new Proyectil(
-            new PVector(posicion.x, posicion.y - radio),  // Posición inicial ajustada
-            color(255, 255, 0),  // Color verde para distinguirlas
+            new PVector(posicion.x, posicion.y - radio), /** posicion del proyectil */
+            color(255, 255, 0),  /** color*/
             direccion, 
-            1  // Daño del proyectil
+            1  /** daño */
         );
         proyectiles.add(nuevoProyectil);
         puedeDisparar = false;
-        tiempoUltimoDisparo = 0;  // Reiniciar el temporizador
+        tiempoUltimoDisparo = 0;  /**Temporarizador entre disparos */
       
     }
     
@@ -101,11 +101,11 @@ private float tiempoSinDisparo= 0 ;
         }
     
    public void update(float deltaTime) { /** Logicas de actualizacion del protagonista */
-    // Actualizar temporizador de disparo
+    /**  */
     if (invulnerable) {
-      tiempoInvulnerable -= deltaTime;
+      tiempoInvulnerable -= deltaTime; /** TIempo invulnerable se le resta el deltatime para que la invencibilidad no dure para siempre */
       if (tiempoInvulnerable <= 0){
-        invulnerable = false;
+        invulnerable = false; /** una vez el tiempo sea 0 se vuelve a recibir daño */
       }
     }
          /** Actualizar temporizador de disparo */
@@ -116,7 +116,7 @@ private float tiempoSinDisparo= 0 ;
                 tiempoUltimoDisparo = 0;  /**Reiniciar el temporizador */
             }
         }
-        /** Actualizar el tiempo sin disparo */ 
+        /** Actualizar el tiempo sin disparo */  /** Repetido */
         if (tiempoSinDisparo > 0) {
             tiempoSinDisparo -= deltaTime;
             if (tiempoSinDisparo <= 0) {
@@ -188,14 +188,14 @@ private float tiempoSinDisparo= 0 ;
 return this.score;
 }
   
-   public void cargarPuntuacion() { //no se usa
+   public void cargarPuntuacion() { // /**no se usa */ 
     String[] datos = loadStrings("puntuacion.txt"); 
     if (datos.length > 0) {
         score = Integer.parseInt(datos[0]); 
     }
 }
   
-  public void guardarPuntuacion() { //no se usa
+  public void guardarPuntuacion() { // /**no se usa */ 
     String[] datos = {String.valueOf(score)}; 
     saveStrings("puntuacion.txt", datos); 
 }
