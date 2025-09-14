@@ -1,14 +1,15 @@
 class GestorAudio {
-  Minim minim;
-  AudioPlayer musicaMenu;
-  AudioPlayer musicaJugando;
-  AudioPlayer musicaNivel2;
-  AudioPlayer musicavictoria;
-  AudioPlayer musicaderrota;
-  float volumen = 0.7;
-  boolean muteado = false;
-  int estadoActual = -1; // Para controlar cambios
+  Minim minim; /** */
+  AudioPlayer musicaMenu; /** atributo correspondiente a la musica del menu */
+  AudioPlayer musicaJugando; /** atributo correspondiente a la musica del nivel 1*/
+  AudioPlayer musicaNivel2; /** atributo correspondiente a la musica del nivel 2*/
+  AudioPlayer musicavictoria; /** atributo correspondiente a la musica de la victoria*/
+  AudioPlayer musicaderrota; /** */
+  float volumen = 0.7; /** atributo del volumen*/
+  boolean muteado = false; /** atributo del mute*/
+  int estadoActual = -1; /** atributo Para controlar cambios*/ 
 
+  /** Carga de archivos de audio*/
   GestorAudio(PApplet app) {
     minim = new Minim(app);
     musicaMenu = minim.loadFile("menu.wav");
@@ -19,18 +20,18 @@ class GestorAudio {
     setVolumen(volumen);
   }
 
-  // Método auxiliar para detener y reiniciar una pista
+  /** Método auxiliar para detener y reiniciar una pista */ 
   void detener(AudioPlayer m) {
     if (m != null) {
       m.pause();
       m.rewind();
     }
   }
-
+ /** Metodo actualizar con switch del estado de la musica*/
   void actualizar(int nuevoEstado) {
-    if (estadoActual == nuevoEstado) return;
+    if (estadoActual == nuevoEstado) return; /** almacenar el estado actual */
 
-    // Detener música anterior
+    /** Switch para detener musica*/
     switch (estadoActual) {
       case ESTADO_MENU: detener(musicaMenu); break;
       case ESTADO_JUGANDO: detener(musicaJugando); break;
@@ -41,12 +42,12 @@ class GestorAudio {
       case ESTADO_CREDITOS: detener(musicavictoria); break;
     }
 
-    // Iniciar nueva música (solo si no está muteado)
+    /** Iniciar nueva musica */
     if (!muteado) {
       switch(nuevoEstado) {
         case ESTADO_MENU:
-          musicaMenu.rewind();
-          musicaMenu.loop();
+          musicaMenu.rewind(); /** musica rebobinada*/
+          musicaMenu.loop(); /** musica en loop*/
           break;
         case ESTADO_JUGANDO:
           musicaJugando.rewind();
@@ -71,10 +72,10 @@ class GestorAudio {
       }
     }
 
-    estadoActual = nuevoEstado;
+    estadoActual = nuevoEstado; /** almacenar estado*/
   }
 
-  void setVolumen(float vol) {
+  void setVolumen(float vol) { /** metodo para establecer el volumen */
     volumen = constrain(vol, 0, 1);
     float dB = map(volumen, 0, 1, -40, 0);
     musicaMenu.setGain(dB);
@@ -84,7 +85,7 @@ class GestorAudio {
     musicaderrota.setGain(dB);
   }
 
-  void toggleMute(boolean muteado) {
+  void toggleMute(boolean muteado) { /** metodo para activar el mute o desactivarlo */
     this.muteado = muteado;
     if (muteado) {
       musicaMenu.mute();
@@ -102,7 +103,7 @@ class GestorAudio {
     }
   }
 
-  void detener() {
+  void detener() { /** Metodo para detener la musica*/
     musicaMenu.close();
     musicaJugando.close();
     musicaNivel2.close();
@@ -111,7 +112,7 @@ class GestorAudio {
     minim.stop();
   }
 
-  void detenerMusicaActual() {
+  void detenerMusicaActual() { /** switch para detener la musica que se esta escuchando */
     switch (estadoActual) {
       case ESTADO_MENU: detener(musicaMenu); break;
       case ESTADO_JUGANDO: detener(musicaJugando); break;
