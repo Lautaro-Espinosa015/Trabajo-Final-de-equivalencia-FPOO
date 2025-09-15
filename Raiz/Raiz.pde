@@ -105,9 +105,9 @@ void setup() {
         luckyblock.add(new Lucky(posicionL, lucky));
     }
     
-    /** Se inicializa una Lista de 8 enemigos cuya posicion será aleatoria en un espacio de 2400x1600 */
+    /** Se inicializa una Lista de 36 enemigos cuya posicion será aleatoria en un espacio de 2400x1600 */
     enemigos = new ArrayList<Enemigo>(); /** Se crea un arraylist para la generacion de multiples enemigos de la suerte */
-    for (int i = 0; i < 8; i++) { 
+    for (int i = 0; i < 36; i++) { 
         PVector posicion = new PVector(random(0, 2400), random(0, 1600));
         enemigos.add(new EnemigoFuerte(posicion,enemigo2));
         posicion = new PVector(random(0, 2400), random(0, 1600));
@@ -115,9 +115,9 @@ void setup() {
         posicion = new PVector(random(0, 2400), random(0, 1600)); 
         enemigos.add(new EnemigoRapido(posicion,enemigo3));
     }
-    /** Se inicializa una Lista de 10 enemigos para el nivel 2 cuya posicion será aleatoria en un espacio de 2400x1600 */
+    /** Se inicializa una Lista de 50 enemigos para el nivel 2 cuya posicion será aleatoria en un espacio de 2400x1600 */
      enemigosNivel2 = new ArrayList<Enemigo>();
-     for (int i = 0; i < 10; i++) { 
+     for (int i = 0; i < 50; i++) { 
         PVector posicionNivel2 = new PVector(random(0, 2400), random(0, 1600));
         enemigosNivel2.add(new EnemigoFuerte(posicionNivel2,enemigo2));
         posicionNivel2 = new PVector(random(0, 2400), random(0, 1600));

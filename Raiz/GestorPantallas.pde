@@ -31,7 +31,13 @@ class GestorPantallas {
   fill(200); // Color gris claro para el título
   textFont(fontTexto); // Fuente normal
   textAlign(CENTER);
-  text("MEJORES PUNTUACIONES", width / 2, 200);
+  text("CONTROLES:", width / 2, 160);
+  text("W/A/S/D - Movimiento", width / 2, 190);
+  text("ESPACIO - Disparar", width / 2, 220);
+  text("P - Pausa", width / 2, 250);
+  text("ESC - Cerrar aplicación", width / 2, 280);
+  text("M - Mutear música", width / 2, 310);
+
   
   fill(255); // Color blanco para las puntuaciones
   for (int i = 0; i < min(5, mejoresPuntuaciones.size()); i++) {
