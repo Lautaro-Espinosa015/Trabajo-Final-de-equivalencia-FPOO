@@ -35,7 +35,7 @@ final int ESTADO_PAUSA = 3;
 final int ESTADO_NIVEL2 = 4;
 final int ESTADO_CREDITOS = 5;
 final int ESTADO_HORDA= 6;
-int estadoG;
+private int estadoG;
 
 private boolean HORDA= false;
 private int nivel = 1; /** atributo para gestion del nivel */
@@ -190,6 +190,7 @@ void draw() {
     
 /** Logica especifica del nivel 1 */
 void actualizarJuego(float deltaTime) {
+    HORDA = false;
     nivel1.actualizar(deltaTime, prota, joypad, () -> { /** se envia deltaTime,protagonista,joypad y () se refiere a la funcion que verifica constantemente que el score del */
         if (prota.getScore() >= 500 && nivel == 1 && HORDA == false) { /** protagonista sea menor a 500 y no se encuentre en estado horda de otra manera el estado se cambiaria a nivel2 MENU*/
             nivel = 2;                                                  /** y la generacion de enemigos y niveles se reiniciaria*/
@@ -259,11 +260,15 @@ void reiniciarGeneracionNivel2() {
 /** Reset de del videojuego en caso de llegar al estado_creditos o perder en el nivel 2, etc */
 void reiniciarJuego() {
     nivel = 1; /** volver al nivel 1 */
-    HORDA = false; /** Desactivar el modo horda */
     proyectilesEnemigos.clear(); /**Limpiar proyectiles enemigos */ 
     enemigos.clear(); /**Limpiar enemigos */ 
     luckyblock.clear(); /**Limpiar lucky blocks */ 
+    if (HORDA == true){
     setup();
+    }else {
+    HORDA = false; /** Desactivar el modo horda */  
+    setup();
+    }
 }
 
 /** Funcion para agregar una cierta cantidad de enemigos */ /** */
@@ -314,19 +319,19 @@ void stop() {
 public void keyPressed() {
   if (estadoActual == ESTADO_JUGANDO || estadoActual == ESTADO_NIVEL2 || estadoActual == ESTADO_HORDA){ /** El protagonista se movera siempre y cuando se encuentre en algunos de los estados de juego*/
 
-    if (key == 'w' || keyCode == UP) { /** mover hacia arriba con flecha o w*/
+    if (key == 'w' || keyCode == UP || key == 'W') { /** mover hacia arriba con flecha o w*/
 
         joypad.setUpPressed(true);
     }
-    if (key == 's' || keyCode == DOWN) { /** mover hacia arriba con flecha o s*/
+    if (key == 's' || keyCode == DOWN || key == 'S') { /** mover hacia arriba con flecha o s*/
 
         joypad.setDownPressed(true);
     }
-    if (key == 'd' || keyCode == RIGHT) { /** mover hacia arriba con flecha o d*/
+    if (key == 'd' || keyCode == RIGHT || key == 'D') { /** mover hacia arriba con flecha o d*/
 
         joypad.setRightPressed(true);
     }
-    if (key == 'a' || keyCode == LEFT) { /** mover hacia arriba con flecha o a*/
+    if (key == 'a' || keyCode == LEFT || key == 'A') { /** mover hacia arriba con flecha o a*/
 
         joypad.setLeftPressed(true);
     }
@@ -353,7 +358,10 @@ public void keyPressed() {
     }
     if (key == 'r' && estadoActual == ESTADO_GAMEOVER) { /** En el caso que el estado se haya cambiado a GAMEOVER el jugador presionando r puede volver al estado jugando desde el primer nivel*/
         reiniciarJuego(); /** reinicia el juego en su totalidad antes de cambiar el estado*/
-        estadoActual = ESTADO_JUGANDO;
+        if (HORDA == true){
+          estadoActual = ESTADO_HORDA;
+        }else 
+          estadoActual = ESTADO_JUGANDO;
     }
     if (key == 'e' && estadoActual == ESTADO_GAMEOVER) { /** En otro caso el jugador puede optar por ingresar al menu princial desde el gameover*/
         reiniciarJuego(); /** reinicia el juego en su totalidad antes de cambiar el estado*/
@@ -364,25 +372,6 @@ public void keyPressed() {
         estadoActual = ESTADO_NIVEL2;  
         reiniciarGeneracionNivel2();  /** Reiniciar generacion de enemigos*/
     }
-    
-    
-  
-  if (key == 'r' && estadoActual == ESTADO_GAMEOVER) { /** por alguna razon esta duplicado, ver */
-    audio.detenerMusicaActual(); // detener cualquier música activa
-    reiniciarJuego();
-    estadoActual = ESTADO_JUGANDO;
-    
-    
-    
-}
-
-
-
-if (key == 'e' && estadoActual == ESTADO_GAMEOVER) { /** por alguna razon esta duplicado, ver */
-    audio.detenerMusicaActual();
-    reiniciarJuego();
-    estadoActual = ESTADO_MENU; // volver al menu desde el gameover
-}
 
 
 
@@ -414,16 +403,16 @@ if (key == '}'){
     
   /** control de teclas cuando dejan de ser pulsadas */
 public void keyReleased() { 
-    if (key == 'w' || keyCode == UP) {
+    if (key == 'w' || keyCode == UP || key == 'W') {
         joypad.setUpPressed(false);
     }
-    if (key == 's' || keyCode == DOWN) {
+    if (key == 's' || keyCode == DOWN || key == 'S') {
         joypad.setDownPressed(false);
     }
-    if (key == 'd' || keyCode == RIGHT) {
+    if (key == 'd' || keyCode == RIGHT || key == 'D') {
         joypad.setRightPressed(false);
     }
-    if (key == 'a' || keyCode == LEFT) {
+    if (key == 'a' || keyCode == LEFT || key == 'A') {
         joypad.setLeftPressed(false);
     }
 }
